@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container mt-4">
+        <h2>Danh sách sản phẩm</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="product : ${products}">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}"></h5>
+                        <p class="card-text">
+                            Mã: <span th:text="${product.code}"></span><br>
+                            Giá: <span th:text="${#numbers.formatCurrency(product.price)}"></span><br>
+                            Số lượng: <span th:text="${product.quantity}"></span>
+                        </p>
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" th:attr="data-product-id=${product.id}" min="1" th:max="${product.quantity}" value="1">
+                            <button class="btn btn-primary add-to-cart" th:attr="data-product-id=${product.id}">Thêm vào giỏ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-end mt-3">
+            <a href="/cart" class="btn btn-primary">Xem giỏ hàng</a>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            $('.add-to-cart').click(function() {
+                var productId = $(this).data('product-id');
+                var quantity = $(this).prev('input').val();
+                
+                $.ajax({
+                    url: '/cart/add',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: quantity
+                    },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function(response) {
+                        alert('Đã thêm vào giỏ hàng');
+                    },
+                    error: function(xhr) {
+                        alert('Lỗi: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

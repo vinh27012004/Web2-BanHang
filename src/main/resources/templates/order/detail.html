@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container mt-4">
+        <h2 class="mb-3">Chi tiết đơn hàng #<span th:text="${order.id}"></span></h2>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                Thông tin chung
+            </div>
+            <div class="card-body">
+                <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></span></p>
+                <p><strong>Khách hàng:</strong> 
+                    <span th:if="${order.customer}" th:text="${order.customer.name + ' - ' + order.customer.phone}"></span>
+                    <span th:unless="${order.customer}">Khách lẻ</span>
+                </p>
+                <p><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatCurrency(order.totalAmount)}"></span></p>
+                <p><strong>Khách trả:</strong> <span th:text="${#numbers.formatCurrency(order.customerPaid)}"></span></p>
+                <p><strong>Tiền thối:</strong> <span th:text="${#numbers.formatCurrency(order.changeAmount)}"></span></p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                Sản phẩm trong đơn hàng
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${order.items}">
+                            <td th:text="${item.product.name}"></td>
+                            <td th:text="${item.quantity}"></td>
+                            <td th:text="${#numbers.formatCurrency(item.unitPrice)}"></td>
+                            <td th:text="${#numbers.formatCurrency(item.totalPrice)}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-end">
+            <a href="/order" class="btn btn-secondary">Quay lại danh sách đơn hàng</a>
+        </div>
+    </div>
+</body>
+</html> 

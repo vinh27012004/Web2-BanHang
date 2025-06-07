@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    
+    <div class="container mt-4">
+        <h2>Thanh toán</h2>
+        
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${error}"></span>
+        </div>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${cartItems}">
+                    <td th:text="${item.product.name}"></td>
+                    <td th:text="${item.quantity}"></td>
+                    <td th:text="${#numbers.formatCurrency(item.product.price)}"></td>
+                    <td th:text="${#numbers.formatCurrency(item.totalPrice)}"></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                    <td th:text="${#numbers.formatCurrency(totalAmount)}"></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <form th:action="@{/order/create}" method="post">
+            <div class="mb-3">
+                <label for="customer" class="form-label">Khách hàng (Tùy chọn):</label>
+                <select id="customer" name="customerId" class="form-select">
+                    <option value="">Chọn khách hàng</option>
+                    <option th:each="customer : ${customers}" 
+                            th:value="${customer.id}"
+                            th:text="${customer.name + ' - ' + customer.phone}">
+                    </option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="customerPaid" class="form-label">Số tiền khách trả:</label>
+                <input type="number" id="customerPaid" name="customerPaid" class="form-control" step="0.01" required>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Xác nhận thanh toán</button>
+             <a href="/cart" class="btn btn-secondary">Quay lại giỏ hàng</a>
+        </form>
+    </div>
+</body>
+</html> 
