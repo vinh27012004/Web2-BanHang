@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Danh sách nhập kho</title>
+    <title>Quản lý kho</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -10,39 +10,109 @@
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Danh sách nhập kho</h2>
+            <h2>Quản lý kho</h2>
             <a href="/stock/add" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Thêm phiếu nhập
             </a>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Ghi chú</th>
-                        <th>Ngày nhập</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="entry : ${entries}">
-                        <td th:text="${entry.id}"></td>
-                        <td th:text="${entry.product.name}"></td>
-                        <td th:text="${entry.quantity}"></td>
-                        <td th:text="${entry.note}"></td>
-                        <td th:text="${#temporals.format(entry.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td>
-                            <a th:href="@{/stock/product/{id}(id=${entry.product.id})}" class="btn btn-sm btn-info">
-                                <i class="bi bi-clock-history"></i> Lịch sử
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Thống kê tổng quan -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng số sản phẩm</h5>
+                        <p class="card-text display-6" th:text="${totalProducts}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Tổng số lượng</h5>
+                        <p class="card-text display-6" th:text="${totalQuantity}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Sản phẩm sắp hết</h5>
+                        <p class="card-text display-6" th:text="${lowStockProducts}">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Danh sách sản phẩm trong kho</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Mã sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="product : ${products}">
+                                <td th:text="${product.code}"></td>
+                                <td th:text="${product.name}"></td>
+                                <td th:text="${product.quantity}"></td>
+                                <td th:text="${#numbers.formatCurrency(product.price)}"></td>
+                                <td>
+                                    <span th:if="${product.quantity <= 10}" class="badge bg-danger">Sắp hết</span>
+                                    <span th:unless="${product.quantity <= 10}" class="badge bg-success">Còn hàng</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/stock/product/{id}(id=${product.id})}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-clock-history"></i> Lịch sử
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lịch sử nhập kho -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Lịch sử nhập kho gần đây</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Ghi chú</th>
+                                <th>Ngày nhập</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="entry : ${entries}">
+                                <td th:text="${entry.id}"></td>
+                                <td th:text="${entry.product.name}"></td>
+                                <td th:text="${entry.quantity}"></td>
+                                <td th:text="${entry.note}"></td>
+                                <td th:text="${#temporals.format(entry.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 

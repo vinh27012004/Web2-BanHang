@@ -36,6 +36,10 @@ public class Invoice {
     private Double changeAmount;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -81,6 +85,14 @@ public class Invoice {
 
     public void setChangeAmount(Double changeAmount) {
         this.changeAmount = changeAmount;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Customer getCustomer() {

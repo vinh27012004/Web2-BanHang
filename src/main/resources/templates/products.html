@@ -1,12 +1,55 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/header :: head}">
 </head>
 <body>
     <div th:replace="~{fragments/header :: header}"></div>
     
     <div class="container mt-4">
-        <h2>Danh sách sản phẩm</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Danh sách sản phẩm</h2>
+            <button sec:authorize="hasRole('ADMIN')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="bi bi-plus-circle"></i> Thêm sản phẩm
+            </button>
+        </div>
+
+        <!-- Modal thêm sản phẩm -->
+        <div class="modal fade" id="addProductModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm sản phẩm mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addProductForm">
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Mã sản phẩm</label>
+                                <input type="text" class="form-control" id="code" name="code" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Tên sản phẩm</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Giá</label>
+                                <input type="number" class="form-control" id="price" name="price" min="0" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Số lượng</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" onclick="addProduct()">Thêm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-4 mb-4" th:each="product : ${products}">
                 <div class="card">
@@ -58,6 +101,34 @@
                 });
             });
         });
+
+        function addProduct() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            
+            var formData = {
+                code: $('#code').val(),
+                name: $('#name').val(),
+                price: $('#price').val(),
+                quantity: $('#quantity').val()
+            };
+
+            $.ajax({
+                url: '/products/add',
+                type: 'POST',
+                data: formData,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(response) {
+                    alert('Thêm sản phẩm thành công');
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert('Lỗi: ' + xhr.responseText);
+                }
+            });
+        }
     </script>
 </body>
 </html> 

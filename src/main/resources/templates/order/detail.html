@@ -14,6 +14,7 @@
             </div>
             <div class="card-body">
                 <p><strong>Ngày tạo:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></span></p>
+                <p><strong>Người bán:</strong> <span th:text="${order.user.fullName}"></span></p>
                 <p><strong>Khách hàng:</strong> 
                     <span th:if="${order.customer}" th:text="${order.customer.name + ' - ' + order.customer.phone}"></span>
                     <span th:unless="${order.customer}">Khách lẻ</span>

@@ -13,6 +13,7 @@
                 <tr>
                     <th>ID Đơn hàng</th>
                     <th>Ngày tạo</th>
+                    <th>Người bán</th>
                     <th>Khách hàng</th>
                     <th>Tổng tiền</th>
                     <th></th>
@@ -22,6 +23,7 @@
                 <tr th:each="order : ${orders}">
                     <td th:text="${order.id}"></td>
                     <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${order.user.fullName}"></td>
                     <td>
                         <span th:if="${order.customer}" th:text="${order.customer.name + ' - ' + order.customer.phone}"></span>
                         <span th:unless="${order.customer}">Khách lẻ</span>

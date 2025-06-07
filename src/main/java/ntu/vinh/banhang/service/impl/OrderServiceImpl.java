@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +14,11 @@ import ntu.vinh.banhang.entity.Invoice;
 import ntu.vinh.banhang.entity.InvoiceItem;
 import ntu.vinh.banhang.entity.Product;
 import ntu.vinh.banhang.entity.Customer;
+import ntu.vinh.banhang.entity.User;
 import ntu.vinh.banhang.model.CartItem;
 import ntu.vinh.banhang.repository.InvoiceRepository;
 import ntu.vinh.banhang.repository.ProductRepository;
+import ntu.vinh.banhang.repository.UserRepository;
 import ntu.vinh.banhang.service.OrderService;
 
 @Service
@@ -26,12 +30,22 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     @Transactional
     public Invoice createOrder(List<CartItem> cartItems, Customer customer, Double customerPaid) {
         Invoice invoice = new Invoice();
         invoice.setCreatedAt(LocalDateTime.now());
         invoice.setCustomer(customer);
+        
+        // Lấy thông tin người dùng hiện tại
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User currentUser = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        invoice.setUser(currentUser);
         
         double totalAmount = 0;
         List<InvoiceItem> invoiceItems = new ArrayList<>();
